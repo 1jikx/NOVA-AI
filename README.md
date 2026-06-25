@@ -75,7 +75,7 @@ pip install -r requirements.txt
 ### Run
 
 ```bash
-python main.py
+python main.py  OR ./launch.sh for Linux AND  for windows just double click the run.cmd file 
 ```
 
 NOVA will open its HUD interface, ask for your Gemini API key (if not set), and connect. Start talking.
