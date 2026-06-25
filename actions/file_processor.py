@@ -1,5 +1,5 @@
 """
-file_processor.py — JARVIS Universal File Processor
+file_processor.py — NOVA Universal File Processor
 
 Supported types:
   image   → describe, ocr, resize, convert, compress, crop
@@ -18,6 +18,7 @@ Supported types:
 
 import os
 import re
+import sys
 import json
 import shutil
 import subprocess
@@ -25,7 +26,7 @@ import tempfile
 from pathlib import Path
 from datetime import datetime
 
-import google.generativeai as genai
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def _get_api_key() -> str:
@@ -35,8 +36,20 @@ def _get_api_key() -> str:
 
 
 def _gemini_client():
-    genai.configure(api_key=_get_api_key())
-    return genai.GenerativeModel("gemini-2.5-flash")
+    """Returns a model object. Uses llm_helper for offline fallback."""
+    from core.llm_helper import chat
+    # Return a wrapper that has generate_content interface
+    class _ChatWrapper:
+        def generate_content(self, prompt, **kwargs):
+            if isinstance(prompt, list):
+                # Multimodal — need real Gemini client
+                import google.generativeai as real_genai
+                real_genai.configure(api_key=_get_api_key())
+                model = real_genai.GenerativeModel("gemini-2.5-flash")
+                return model.generate_content(prompt, **kwargs)
+            text = chat(prompt) if isinstance(prompt, str) else chat(str(prompt))
+            return type("Resp", (), {"text": text})()
+    return _ChatWrapper()
 
 
 def _detect_type(path: Path) -> str:

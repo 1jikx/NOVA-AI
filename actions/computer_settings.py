@@ -7,6 +7,9 @@ import subprocess
 import platform
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from core.llm_helper import chat
+
 try:
     import pyautogui
     pyautogui.FAILSAFE = True
@@ -569,11 +572,6 @@ _DANGEROUS_ACTIONS = {"restart", "shutdown"}
 
 
 def _detect_action(description: str) -> dict:
-
-    import google.generativeai as genai
-    genai.configure(api_key=_get_api_key())
-    model = genai.GenerativeModel("gemini-2.5-flash-lite")
-
     available = ", ".join(sorted(ACTION_MAP.keys())) + \
                 ", volume_set, type_text, press_key, reload_n"
 
@@ -596,8 +594,8 @@ Rules:
 - Return ONLY the JSON, no explanation, no markdown."""
 
     try:
-        resp = model.generate_content(prompt)
-        text = re.sub(r"```(?:json)?", "", resp.text).strip().rstrip("`").strip()
+        text = chat(prompt)
+        text = re.sub(r"```(?:json)?", "", text).strip().rstrip("`").strip()
         return json.loads(text)
     except Exception as e:
         print(f"[Settings] Intent detection failed: {e}")

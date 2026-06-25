@@ -9,6 +9,9 @@ import platform
 from pathlib import Path
 from datetime import datetime
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from core.llm_helper import chat
+
 try:
     import pyautogui
     _PYAUTOGUI = True
@@ -94,7 +97,7 @@ def _execute_generated_code(code: str, player=None) -> str:
     sandbox["__builtins__"]["print"] = lambda *a: output_lines.append(" ".join(str(x) for x in a))
 
     try:
-        exec(compile(code, "<jarvis_desktop>", "exec"), sandbox)
+        exec(compile(code, "<nova_desktop>", "exec"), sandbox)
         return "\n".join(output_lines) if output_lines else "Done."
     except Exception as e:
         print(f"[Desktop] Exec error: {e}\nCode:\n{code[:300]}")
@@ -102,11 +105,6 @@ def _execute_generated_code(code: str, player=None) -> str:
 
 
 def _ask_gemini_for_desktop_action(task: str) -> str:
-
-    import google.generativeai as genai
-    genai.configure(api_key=_get_api_key())
-    model = genai.GenerativeModel("gemini-2.5-flash")
-
     desktop = str(_get_desktop())
 
     os_specific = ""
@@ -143,8 +141,7 @@ Output ONLY the Python code. No explanation, no markdown, no backticks.
 Task: {task}"""
 
     try:
-        response = model.generate_content(prompt)
-        code = response.text.strip()
+        code = chat(prompt)
         if code.startswith("```"):
             lines = code.split("\n")
             code  = "\n".join(lines[1:-1]).strip()

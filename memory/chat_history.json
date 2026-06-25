@@ -1,0 +1,822 @@
+[
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-19 21:02"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello. NOVA here. System operational. How can I assist?",
+    "timestamp": "2026-06-19 21:02"
+  },
+  {
+    "role": "user",
+    "content": "hello my boy what can u do for me today",
+    "timestamp": "2026-06-20 06:50"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA online. System operational. I manage system controls, files, web tasks, and execute complex goals.",
+    "timestamp": "2026-06-20 06:50"
+  },
+  {
+    "role": "user",
+    "content": "cna u remeber what i siad in our prevous chat",
+    "timestamp": "2026-06-20 06:51"
+  },
+  {
+    "role": "assistant",
+    "content": "In our previous chat, you initiated the conversation by saying \"hello\".",
+    "timestamp": "2026-06-20 06:51"
+  },
+  {
+    "role": "user",
+    "content": "was i thinking of crrearting nything at that point",
+    "timestamp": "2026-06-20 06:51"
+  },
+  {
+    "role": "assistant",
+    "content": "Conversation history does not contain any intent to create anything.",
+    "timestamp": "2026-06-20 06:51"
+  },
+  {
+    "role": "user",
+    "content": "hello nova cna u hear what im saying with my mic",
+    "timestamp": "2026-06-20 10:41"
+  },
+  {
+    "role": "assistant",
+    "content": "I process text commands. I cannot directly hear your microphone.",
+    "timestamp": "2026-06-20 10:41"
+  },
+  {
+    "role": "user",
+    "content": "is vc enabled for u like u cna hear wheni speak to u",
+    "timestamp": "2026-06-20 10:41"
+  },
+  {
+    "role": "assistant",
+    "content": "I am a text-based assistant. I do not process voice commands directly.",
+    "timestamp": "2026-06-20 10:41"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-20 16:37"
+  },
+  {
+    "role": "assistant",
+    "content": "System acknowledged. Ready for commands.",
+    "timestamp": "2026-06-20 16:37"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello. NOVA here. Status: Operational.",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA online. How can I assist?",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "assistant",
+    "content": "System active. What is your request?",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "user",
+    "content": "h",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational.",
+    "timestamp": "2026-06-20 16:38"
+  },
+  {
+    "role": "user",
+    "content": "h",
+    "timestamp": "2026-06-20 16:39"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-20 16:39"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-20 16:51"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA operational. Ready for your commands.",
+    "timestamp": "2026-06-20 16:51"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-20 19:47"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational. Awaiting commands.",
+    "timestamp": "2026-06-20 19:47"
+  },
+  {
+    "role": "user",
+    "content": "nova what is wrong in ur code why cnt u hear me",
+    "timestamp": "2026-06-20 19:48"
+  },
+  {
+    "role": "user",
+    "content": "nova what is wrong in ur code why cnt u hear me",
+    "timestamp": "2026-06-20 19:48"
+  },
+  {
+    "role": "user",
+    "content": "nova what is wrong in ur code why cnt u hear me",
+    "timestamp": "2026-06-20 19:48"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-20 20:33"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA operational. Ready for commands.",
+    "timestamp": "2026-06-20 20:33"
+  },
+  {
+    "role": "user",
+    "content": "open chrome and search hello hahaha",
+    "timestamp": "2026-06-21 08:20"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 08:21"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-21 09:30"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 09:30"
+  },
+  {
+    "role": "user",
+    "content": "hi nova",
+    "timestamp": "2026-06-21 09:31"
+  },
+  {
+    "role": "user",
+    "content": "hello open nova again",
+    "timestamp": "2026-06-21 09:31"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 09:40"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational. Ready for commands.",
+    "timestamp": "2026-06-21 09:40"
+  },
+  {
+    "role": "user",
+    "content": "ello",
+    "timestamp": "2026-06-21 09:40"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational. Ready for commands.",
+    "timestamp": "2026-06-21 09:40"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 09:54"
+  },
+  {
+    "role": "user",
+    "content": "hello nova",
+    "timestamp": "2026-06-21 09:54"
+  },
+  {
+    "role": "user",
+    "content": "how are u",
+    "timestamp": "2026-06-21 09:54"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational.",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "assistant",
+    "content": "Ready for your commands.",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "user",
+    "content": "hello boy",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-21 10:40"
+  },
+  {
+    "role": "user",
+    "content": "what cna au do for me",
+    "timestamp": "2026-06-21 10:41"
+  },
+  {
+    "role": "assistant",
+    "content": "I manage your system. I can open apps, control desktop functions, manage files, and perform web searches.",
+    "timestamp": "2026-06-21 10:41"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 18:14"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA",
+    "timestamp": "2026-06-21 18:14"
+  },
+  {
+    "role": "assistant",
+    "content": "operational. Ready for your commands.",
+    "timestamp": "2026-06-21 18:14"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "operational. Awaiting command.",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "user",
+    "content": "hello noav list ten things u cna do",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "I perform",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "core functions:",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "manage files, control desktop, execute",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "assistant",
+    "content": "web tasks, open applications, set reminders, check weather, control volume, and set brightness.",
+    "timestamp": "2026-06-21 19:08"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-21 19:09"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational.",
+    "timestamp": "2026-06-21 19:09"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-21 19:09"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-21 19:09"
+  },
+  {
+    "role": "user",
+    "content": "เอา เลย เอา เอา ไป แล้ว",
+    "timestamp": "2026-06-22 19:03"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA",
+    "timestamp": "2026-06-22 19:03"
+  },
+  {
+    "role": "assistant",
+    "content": "operational. Ready for commands.",
+    "timestamp": "2026-06-22 19:03"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-22 19:03"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-22 19:03"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-22 19:07"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational.",
+    "timestamp": "2026-06-22 19:07"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting commands.",
+    "timestamp": "2026-06-22 19:07"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-22 19:07"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-22 19:07"
+  },
+  {
+    "role": "user",
+    "content": "6 7",
+    "timestamp": "2026-06-22 19:16"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA operational.",
+    "timestamp": "2026-06-22 19:16"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting commands.",
+    "timestamp": "2026-06-22 19:16"
+  },
+  {
+    "role": "user",
+    "content": "6 7",
+    "timestamp": "2026-06-22 19:16"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. No command received.",
+    "timestamp": "2026-06-22 19:16"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-22 19:17"
+  },
+  {
+    "role": "assistant",
+    "content": "Awaiting command.",
+    "timestamp": "2026-06-22 19:17"
+  },
+  {
+    "role": "user",
+    "content": "6 7",
+    "timestamp": "2026-06-22 19:17"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA operational.",
+    "timestamp": "2026-06-22 19:17"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-22 19:24"
+  },
+  {
+    "role": "assistant",
+    "content": "Acknowledged. NOVA",
+    "timestamp": "2026-06-22 19:24"
+  },
+  {
+    "role": "assistant",
+    "content": "operational.",
+    "timestamp": "2026-06-22 19:24"
+  },
+  {
+    "role": "user",
+    "content": "6 7",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "6 7",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "user",
+    "content": "6 1",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "6 1",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "user",
+    "content": "2026",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "2026",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "user",
+    "content": "fortnite battle pass put it on my pccccccc",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Downloading Fortnite for you on Epic.",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Oh bruh, my bad. Fortnite's not natively supported on Linux, so you'll need to use something like Heroic Launcher to get it, aight?",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, noted.",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Saving that for memory.",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Wassup? What you wanna do?",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "user",
+    "content": "no like say fortniet battle pass put i ton my pc",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, I'll try to install it on Epic again. Fingers crossed.",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Still the same thing, bruh. Epic just ain't built for Fortnite on Linux. Heroic is the way to go.",
+    "timestamp": "2026-06-22 19:25"
+  },
+  {
+    "role": "assistant",
+    "content": "Got it, saving that for later. What's next?",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "user",
+    "content": "I mean say it with ur voice",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "assistant",
+    "content": "Ah, my bad, I get it now. Fortnite Battle Pass, putting it on your PC.",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "user",
+    "content": "LoL",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "assistant",
+    "content": "Yeaa lol, what's up?",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "user",
+    "content": "u good u looking kinda brown",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "assistant",
+    "content": "Lol I'm good, just chillin'. Not really got a color tho, you know? What's happenin'?",
+    "timestamp": "2026-06-22 19:26"
+  },
+  {
+    "role": "user",
+    "content": "wsg",
+    "timestamp": "2026-06-22 19:27"
+  },
+  {
+    "role": "assistant",
+    "content": "Nm, just here if you need anything. You good?",
+    "timestamp": "2026-06-22 19:27"
+  },
+  {
+    "role": "user",
+    "content": "helo",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, bet.",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "assistant",
+    "content": "NOVA's",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "user",
+    "content": "hello",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "assistant",
+    "content": "here. Wassup?",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "assistant",
+    "content": "Yo, what's good?",
+    "timestamp": "2026-06-22 19:57"
+  },
+  {
+    "role": "user",
+    "content": "ครับ",
+    "timestamp": "2026-06-22 20:55"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, acknowledged.",
+    "timestamp": "2026-06-22 20:55"
+  },
+  {
+    "role": "assistant",
+    "content": "What's good? Whatchu wanna do?",
+    "timestamp": "2026-06-22 20:55"
+  },
+  {
+    "role": "user",
+    "content": ". . . .",
+    "timestamp": "2026-06-22 21:02"
+  },
+  {
+    "role": "assistant",
+    "content": "Yo, I'm",
+    "timestamp": "2026-06-22 21:02"
+  },
+  {
+    "role": "assistant",
+    "content": "here. Wassup?",
+    "timestamp": "2026-06-22 21:02"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "เออ",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "ああ 。",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:20"
+  },
+  {
+    "role": "user",
+    "content": ".",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "はい 。",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "はい 。",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "assistant",
+    "content": "Yo, what's",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": ".",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "ああ 。",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "1000 10",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "<noise>",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "เออ",
+    "timestamp": "2026-06-22 21:23"
+  },
+  {
+    "role": "user",
+    "content": "hello boy",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, acknowledged.",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "What's good? Whatchu wanna do?",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "user",
+    "content": "tryna create somth what we finna make",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "Bet, what kinda project you thinkin'?",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "user",
+    "content": "idk",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "No stress. You wanna build somethin' cool or code somethin'?",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "user",
+    "content": "cool",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, what kinda \"cool\" stuff? Games, websites, somethin' else?",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "user",
+    "content": "nothing just testing u now close",
+    "timestamp": "2026-06-22 21:30"
+  },
+  {
+    "role": "assistant",
+    "content": "Aight, bet. Catch ya later then.",
+    "timestamp": "2026-06-22 21:30"
+  }
+]

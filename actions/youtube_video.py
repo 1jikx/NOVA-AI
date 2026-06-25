@@ -9,6 +9,9 @@ from pathlib import Path
 from datetime import datetime
 from urllib.parse import quote_plus
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from core.llm_helper import chat
+
 import pyautogui
 import numpy as np
 
@@ -158,26 +161,18 @@ def _get_transcript(video_id: str) -> str | None:
 
 
 def _summarize_with_gemini(transcript: str, video_url: str) -> str:
-    import google.generativeai as genai
-
-    genai.configure(api_key=_get_api_key())
-    model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
-        system_instruction=(
-            "You are JARVIS, an AI assistant. "
+    max_chars = 80000
+    truncated = transcript[:max_chars] + ("..." if len(transcript) > max_chars else "")
+    return chat(
+        f"Please summarize this YouTube video transcript:\n\n{truncated}",
+        system_prompt=(
+            "You are NOVA, a control AI. "
             "Summarize YouTube video transcripts clearly and concisely. "
             "Structure: 1-sentence overview, then 3-5 key points. "
             "Be direct. Address the user as 'sir'. "
             "Match the language of the transcript."
         )
     )
-
-    max_chars = 80000
-    truncated = transcript[:max_chars] + ("..." if len(transcript) > max_chars else "")
-    response  = model.generate_content(
-        f"Please summarize this YouTube video transcript:\n\n{truncated}"
-    )
-    return response.text.strip()
 
 
 def _save_summary(content: str, video_url: str) -> str:
@@ -188,7 +183,7 @@ def _save_summary(content: str, video_url: str) -> str:
     filepath = desktop / filename
 
     header = (
-        f"JARVIS — YouTube Summary\n"
+        f"NOVA — YouTube Summary\n"
         f"{'─' * 50}\n"
         f"URL    : {video_url}\n"
         f"Date   : {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"

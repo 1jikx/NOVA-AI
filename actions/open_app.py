@@ -47,6 +47,15 @@ _APP_ALIASES: dict[str, dict[str, str]] = {
     "libreoffice":        {"Windows": "soffice",                 "Darwin": "LibreOffice",          "Linux": "libreoffice"},
     "notepad":            {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "gedit"},
     "textedit":           {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "gedit"},
+    "kate":               {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "kate"},
+    "mousepad":           {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "mousepad"},
+    "leafpad":            {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "leafpad"},
+    "geany":              {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "geany"},
+    "nano":               {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "gnome-terminal -- nano"},
+    "vim":                {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "gnome-terminal -- vim"},
+    "sublime":            {"Windows": "subl.exe",                "Darwin": "Sublime Text",         "Linux": "subl"},
+    "atom":               {"Windows": "atom.exe",                "Darwin": "Atom",                 "Linux": "atom"},
+    "text editor":        {"Windows": "notepad.exe",             "Darwin": "TextEdit",             "Linux": "gedit"},
     "explorer":           {"Windows": "explorer.exe",            "Darwin": "Finder",               "Linux": "nautilus"},
     "file explorer":      {"Windows": "explorer.exe",            "Darwin": "Finder",               "Linux": "nautilus"},
     "finder":             {"Windows": "explorer.exe",            "Darwin": "Finder",               "Linux": "nautilus"},
@@ -183,7 +192,7 @@ def _launch_linux(app_name: str) -> bool:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
-            time.sleep(1.0)
+            time.sleep(2.0)
             return True
         except Exception:
             pass
@@ -193,6 +202,7 @@ def _launch_linux(app_name: str) -> bool:
             ["xdg-open", app_name],
             capture_output=True, timeout=5
         )
+        time.sleep(2.0)
         return True
     except Exception:
         pass
@@ -208,6 +218,7 @@ def _launch_linux(app_name: str) -> bool:
                 capture_output=True, timeout=5
             )
             if result.returncode == 0:
+                time.sleep(2.0)
                 return True
         except Exception:
             pass

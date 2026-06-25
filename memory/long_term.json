@@ -1,17 +1,69 @@
 {
-  "identity": {},
+  "identity": {
+    "assistant_name": {
+      "value": "NOVA",
+      "updated": "2026-05-12"
+    },
+    "name": {
+      "value": "jikx",
+      "updated": "2026-06-25"
+    },
+    "age": {
+      "value": "16",
+      "updated": "2026-06-25"
+    }
+  },
   "preferences": {
     "assistant_name": {
-      "value": "Jarvis",
+      "value": "NOVA",
       "updated": "2026-05-06"
     },
     "creator_response": {
       "value": "I was made by Jikx the hacker",
       "updated": "2026-05-07"
+    },
+    "fortnite_linux_note": {
+      "value": "Not natively supported on Linux, needs Heroic Launcher",
+      "updated": "2026-06-22"
+    },
+    "fortnite_linux_solution": {
+      "value": "Install via Heroic Launcher",
+      "updated": "2026-06-22"
+    },
+    "hobby": {
+      "value": "footballer",
+      "updated": "2026-06-25"
     }
   },
-  "projects": {},
-  "relationships": {},
+  "projects": {
+    "stock_holding": {
+      "value": "50000 dollars",
+      "updated": "2026-06-25"
+    }
+  },
+  "relationships": {
+    "creator": {
+      "value": "jikx",
+      "updated": "2026-06-25"
+    },
+    "family_status": {
+      "value": "married with 2 kids",
+      "updated": "2026-06-25"
+    },
+    "partner_name": {
+      "value": "Blessing",
+      "updated": "2026-06-25"
+    },
+    "contact_name": {
+      "value": "Tammy",
+      "updated": "2026-06-25"
+    }
+  },
   "wishes": {},
-  "notes": {}
+  "notes": {
+    "user_saying": {
+      "value": "444 i dey with s1 or die oluwa dey by my side",
+      "updated": "2026-06-25"
+    }
+  }
 }

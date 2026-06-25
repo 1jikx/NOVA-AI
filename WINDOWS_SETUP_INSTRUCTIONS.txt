@@ -1,0 +1,75 @@
+NOVA AI - WINDOWS SETUP INSTRUCTIONS
+=====================================
+
+WHAT IS THIS?
+NOVA AI is a personal AI assistant that uses your voice, sees your screen,
+and can control your computer. It runs locally on your PC using a free
+Gemini API key from Google.
+
+
+PREREQUISITES
+-------------
+1. Python 3.11 or 3.12
+   Download: https://www.python.org/downloads/
+   IMPORTANT: During install, check "Add Python to PATH"
+
+2. A free Gemini API key
+   Get one at: https://aistudio.google.com/apikey
+
+
+STEP-BY-STEP SETUP
+-------------------
+
+1. Copy the entire "Nova-AI" folder to the Windows PC.
+
+2. Double-click "setup.cmd"
+   - This creates a virtual environment
+   - Installs all Python dependencies
+   - Installs Playwright browsers (for browser control)
+   - Takes 2-5 minutes
+
+3. To run immediately (no build needed):
+   - Double-click "run.cmd"
+   - NOVA will open and ask for your API key
+   - Paste your Gemini API key and press Enter
+   - Done! Talk to NOVA or type commands.
+
+4. To build a standalone .exe (optional):
+   - Double-click "build.cmd"
+   - Wait for the build to finish (3-10 minutes)
+   - The EXE will be at: dist\Nova-AI\Nova-AI.exe
+   - You can copy just the dist\Nova-AI folder to share with others
+
+
+REQUIREMENTS
+------------
+- Windows 10 or 11
+- Python 3.11 or 3.12
+- Microphone (for voice commands)
+- Internet connection (for Gemini AI)
+
+
+TROUBLESHOOTING
+---------------
+- "can't run on this PC" -> You need Python installed first. Run setup.cmd.
+- "python is not recognized" -> Reinstall Python, check "Add to PATH"
+- "No module named..." -> Run setup.cmd again
+- "Microphone not working" -> Check Windows mic permissions in Settings
+- "API error" -> Make sure your Gemini API key is valid and pasted correctly
+- Double-clicking .py file does nothing -> Use run.cmd instead of .py files
+
+
+IMPORTANT: ALWAYS USE THE .CMD FILES. Do NOT double-click .py or .spec files directly.
+
+FILES IN THIS FOLDER (what each one does)
+------------------------------------------
+setup.cmd          - FIRST TIME ONLY: installs Python deps and creates venv
+run.cmd            - LAUNCHES NOVA: double-click to start the assistant
+build.cmd          - BUILDS EXE: creates a standalone Nova-AI.exe in dist\ folder
+Nova-AI-Windows.py - Windows-compatible entry point (DO NOT RUN DIRECTLY)
+Nova-AI.spec       - PyInstaller config used by build.cmd (DO NOT RUN DIRECTLY)
+requirements.txt   - Python dependency list
+launch.sh          - Linux launcher (ignore this, it's for Linux only)
+main.py            - Original Linux entry point (ignore, run.cmd uses the Windows one)
+
+Everything else (actions/, agent/, config/, core/, memory/) is internal code. Don't touch those.

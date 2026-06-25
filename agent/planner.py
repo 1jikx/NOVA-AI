@@ -61,13 +61,15 @@ computer_settings
   value: string (optional)
 
 computer_control
-  action: "type" | "click" | "hotkey" | "press" | "scroll" | "screenshot" | "screen_find" | "screen_click" (required)
+  action: "type" | "click" | "hotkey" | "press" | "scroll" | "screenshot" | "screen_find" | "screen_click" | "wait" | "focus_window" (required)
   text: string (for type)
   x, y: int (for click)
   keys: string (for hotkey, e.g. "ctrl+c")
   key: string (for press)
   direction: "up" | "down" (for scroll)
   description: string (for screen_find/screen_click)
+  seconds: number (for wait)
+  title: string (for focus_window — window title to bring to front)
 
 screen_process
   text: string (required) — what to analyze or ask about the screen
@@ -150,6 +152,22 @@ Steps:
 
 reminder | date: [today], time: [now+30min], message: "Reminder"
 
+Goal: "Open Notepad and type Hello World"
+Steps:
+
+open_app | app_name: "notepad"
+computer_control | action: wait, seconds: 2
+computer_control | action: focus_window, title: "Notepad"
+computer_control | action: type, text: "Hello World"
+
+Goal: "Open gedit and write a shopping list"
+Steps:
+
+open_app | app_name: "gedit"
+computer_control | action: wait, seconds: 2
+computer_control | action: focus_window, title: "gedit"
+computer_control | action: type, text: "Shopping List\n- Milk\n- Eggs\n- Bread"
+
 OUTPUT — return ONLY valid JSON, no markdown, no explanation, no code blocks:
 {
   "goal": "...",
@@ -172,21 +190,14 @@ def _get_api_key() -> str:
 
 
 def create_plan(goal: str, context: str = "") -> dict:
-    import google.generativeai as genai
-
-    genai.configure(api_key=_get_api_key())
-    model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash-lite",
-        system_instruction=PLANNER_PROMPT
-    )
+    from core.llm_helper import chat
 
     user_input = f"Goal: {goal}"
     if context:
         user_input += f"\n\nContext: {context}"
 
     try:
-        response = model.generate_content(user_input)
-        text     = response.text.strip()
+        text = chat(user_input, system_prompt=PLANNER_PROMPT)
         text     = re.sub(r"```(?:json)?", "", text).strip().rstrip("`").strip()
 
         plan = json.loads(text)
@@ -232,13 +243,7 @@ def _fallback_plan(goal: str) -> dict:
 
 
 def replan(goal: str, completed_steps: list, failed_step: dict, error: str) -> dict:
-    import google.generativeai as genai
-
-    genai.configure(api_key=_get_api_key())
-    model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
-        system_instruction=PLANNER_PROMPT
-    )
+    from core.llm_helper import chat
 
     completed_summary = "\n".join(
         f"  - Step {s['step']} ({s['tool']}): DONE" for s in completed_steps
@@ -255,8 +260,7 @@ Error: {error}
 Create a REVISED plan for the remaining work only. Do not repeat completed steps."""
 
     try:
-        response = model.generate_content(prompt)
-        text     = response.text.strip()
+        text = chat(prompt, system_prompt=PLANNER_PROMPT)
         text     = re.sub(r"```(?:json)?", "", text).strip().rstrip("`").strip()
         plan     = json.loads(text)
 

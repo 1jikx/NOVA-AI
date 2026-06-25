@@ -9,6 +9,9 @@ import time
 import random
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from core.llm_helper import detect_backend
+
 try:
     import pyautogui
     pyautogui.FAILSAFE = True
@@ -272,31 +275,92 @@ def _focus_window(title: str) -> str:
             return f"focus_window (macOS) failed: {e}"
 
     if os_name == "linux":
+        # Strategy 1: wmctrl exact match
         try:
             result = subprocess.run(
                 ["wmctrl", "-a", title],
                 capture_output=True, timeout=5,
             )
             if result.returncode == 0:
-                time.sleep(0.3)
+                time.sleep(0.5)
                 return f"Focused window: {title}"
         except FileNotFoundError:
             pass
+        except Exception:
+            pass
+        # Strategy 2: wmctrl substring match (-F for fuzzy)
         try:
             result = subprocess.run(
-                ["xdotool", "search", "--name", title, "windowactivate"],
+                ["wmctrl", "-F", "-a", title],
                 capture_output=True, timeout=5,
             )
-            time.sleep(0.3)
-            return f"Focused window: {title}"
+            if result.returncode == 0:
+                time.sleep(0.5)
+                return f"Focused window (fuzzy): {title}"
+        except Exception:
+            pass
+        # Strategy 3: xdotool search by name (substring)
+        try:
+            result = subprocess.run(
+                ["xdotool", "search", "--name", title],
+                capture_output=True, timeout=5,
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                window_ids = result.stdout.strip().split("\n")
+                if window_ids:
+                    subprocess.run(
+                        ["xdotool", "windowactivate", window_ids[0]],
+                        capture_output=True, timeout=5,
+                    )
+                    time.sleep(0.5)
+                    return f"Focused window: {title} (id={window_ids[0]})"
         except FileNotFoundError:
-            return "focus_window (Linux) requires wmctrl or xdotool"
-        except Exception as e:
-            return f"focus_window (Linux) failed: {e}"
+            pass
+        except Exception:
+            pass
+        # Strategy 4: xdotool search by class
+        try:
+            result = subprocess.run(
+                ["xdotool", "search", "--class", title.lower()],
+                capture_output=True, timeout=5,
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                window_ids = result.stdout.strip().split("\n")
+                if window_ids:
+                    subprocess.run(
+                        ["xdotool", "windowactivate", window_ids[0]],
+                        capture_output=True, timeout=5,
+                    )
+                    time.sleep(0.5)
+                    return f"Focused window by class: {title} (id={window_ids[0]})"
+        except Exception:
+            pass
+        # Strategy 5: xdotool search by classname
+        try:
+            result = subprocess.run(
+                ["xdotool", "search", "--classname", title.lower()],
+                capture_output=True, timeout=5,
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                window_ids = result.stdout.strip().split("\n")
+                if window_ids:
+                    subprocess.run(
+                        ["xdotool", "windowactivate", window_ids[0]],
+                        capture_output=True, timeout=5,
+                    )
+                    time.sleep(0.5)
+                    return f"Focused window by classname: {title} (id={window_ids[0]})"
+        except Exception:
+            pass
+        return "focus_window (Linux) failed: no matching window found (tried wmctrl, xdotool name/class/classname)"
 
     return f"focus_window: unknown OS '{os_name}'"
 
 def _screen_find(description: str) -> tuple[int, int] | None:
+    if detect_backend() == "ollama":
+        print("[ComputerControl] ⚠️ screen_find requires online Gemini vision")
+        return None
+
     api_key = _get_api_key()
     if not api_key:
         print("[ComputerControl] ⚠️ No API key for screen_find")

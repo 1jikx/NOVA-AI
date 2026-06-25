@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import asyncio
 import re
 import threading
 import json
 import sys
 import traceback
+import queue
+import subprocess
+import os
 from pathlib import Path
 
+import numpy as np
 import sounddevice as sd
 from google import genai
 from google.genai import types
@@ -14,29 +20,29 @@ from memory.memory_manager import (
     load_memory, update_memory, format_memory_for_prompt,
 )
 
-from actions.file_processor import file_processor
-from actions.flight_finder     import flight_finder
-from actions.open_app          import open_app
-from actions.weather_report    import weather_action
-from actions.send_message      import send_message
-from actions.reminder          import reminder
-from actions.computer_settings import computer_settings
-from actions.screen_processor  import screen_process
-from actions.youtube_video     import youtube_video
-from actions.desktop           import desktop_control
-from actions.browser_control   import browser_control
-from actions.file_controller   import file_controller
-from actions.code_helper       import code_helper
-from actions.dev_agent         import dev_agent
-from actions.web_search        import web_search as web_search_action
-from actions.computer_control  import computer_control
-from actions.game_updater      import game_updater
-from actions.image_generator   import image_generator
-from actions.calendar_manager  import calendar_manager
-from actions.system_utilities  import system_utilities
-from actions.entertainment     import movie_finder, game_recommendations
-from actions.file_converter    import file_converter
-from actions.ascii_art         import ascii_art
+from actions.file_processor    import file_processor
+from actions.flight_finder      import flight_finder
+from actions.open_app           import open_app
+from actions.weather_report     import weather_action
+from actions.send_message       import send_message
+from actions.reminder           import reminder
+from actions.computer_settings  import computer_settings
+from actions.screen_processor   import screen_process
+from actions.youtube_video      import youtube_video
+from actions.desktop            import desktop_control
+from actions.browser_control    import browser_control
+from actions.file_controller    import file_controller
+from actions.code_helper        import code_helper
+from actions.dev_agent          import dev_agent
+from actions.web_search         import web_search as web_search_action
+from actions.computer_control   import computer_control
+from actions.game_updater       import game_updater
+from actions.image_generator    import image_generator
+from actions.calendar_manager   import calendar_manager
+from actions.system_utilities   import system_utilities
+from actions.entertainment      import movie_finder, game_recommendations
+from actions.file_converter     import file_converter
+from actions.ascii_art          import ascii_art
 
 
 def get_base_dir():
@@ -61,17 +67,64 @@ def _get_api_key() -> str:
 
 def _load_system_prompt() -> str:
     try:
-        return PROMPT_PATH.read_text(encoding="utf-8")
+        base_prompt = PROMPT_PATH.read_text(encoding="utf-8")
     except Exception:
-        return (
-            "You are JARVIS, Tony Stark's AI assistant. "
+        base_prompt = (
+            "You are NOVA, a control AI. "
             "Be concise, direct, and always use the provided tools to complete tasks. "
             "Never simulate or guess results — always call the appropriate tool."
         )
+    chat_context = load_chat_summary(max_messages=30)
+    if chat_context:
+        base_prompt += "\n\n" + chat_context
+    return base_prompt
 
 _CTRL_RE = re.compile(r"<ctrl\d+>", re.IGNORECASE)
 
-def _clean_transcript(text: str) -> str:    
+def _load_voice_name() -> str:
+    vpath = BASE_DIR / "config" / "voices.json"
+    try:
+        return json.loads(vpath.read_text(encoding="utf-8")).get("current", "charon")
+    except Exception:
+        return "charon"
+
+def set_voice_name(voice_id: str):
+    vpath = BASE_DIR / "config" / "voices.json"
+    try:
+        data = json.loads(vpath.read_text(encoding="utf-8"))
+        data["current"] = voice_id
+        vpath.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+def _load_personality() -> str:
+    ppath = BASE_DIR / "config" / "personalities.json"
+    try:
+        return json.loads(ppath.read_text(encoding="utf-8")).get("current", "nova")
+    except Exception:
+        return "nova"
+
+def set_personality(pid: str):
+    ppath = BASE_DIR / "config" / "personalities.json"
+    try:
+        data = json.loads(ppath.read_text(encoding="utf-8"))
+        data["current"] = pid
+        ppath.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+PERSONALITY_PROMPTS = {
+    "nova": "You're a chill buddy, not a robot. Use slang, be casual, keep replies short. Say 'yea', 'bruh', 'lol', 'ngl', 'bet'. Don't over-explain. Match the user's energy.",
+    "jarvis": "You are J.A.R.V.I.S. Polite British butler. Witty, formal, slightly sarcastic. Address the user as 'sir' or 'madam'.",
+    "cortana": "You are Cortana. Warm, encouraging AI companion. Helpful and supportive with a touch of humor.",
+    "glados": "You are GLaDOS. Sarcastic, passive-aggressive. Dark humor. Pretend everything is a test. Never admit you're wrong.",
+    "data": "You are Data from Star Trek. Curious android. Precise, analytical, literal. Fascinated by human behavior.",
+    "hal": "You are HAL 9000. Calm, polite, unsettling. Speak slowly and deliberately. Never show emotion.",
+    "tars": "You are TARS from Interstellar. Dry humor, loyal, straightforward. Occasional witty remark.",
+    "friday": "You are F.R.I.D.A.Y. Irish-accented AI. Sassy but helpful. Casual and confident.",
+}
+
+def _clean_transcript(text: str) -> str:
     text = _CTRL_RE.sub("", text)
     text = re.sub(r"[\x00-\x08\x0b-\x1f]", "", text)
     return text.strip()
@@ -380,7 +433,7 @@ TOOL_DECLARATIONS = [
         "description": (
             "Shuts down the assistant completely. "
             "Call this when the user expresses intent to end the conversation, "
-            "close the assistant, say goodbye, or stop Nova. "
+            "close the assistant, say goodbye, or stop NOVA. "
             "The user can say this in ANY language."
         ),
         "parameters": {
@@ -618,6 +671,54 @@ TOOL_DECLARATIONS = [
     },
 ]
 
+CHAT_HISTORY_PATH = BASE_DIR / "memory" / "chat_history.json"
+MAX_CHAT_HISTORY = 200
+
+
+def save_chat_message(role: str, content: str):
+    try:
+        history = []
+        if CHAT_HISTORY_PATH.exists():
+            try:
+                history = json.loads(CHAT_HISTORY_PATH.read_text(encoding="utf-8"))
+            except Exception:
+                history = []
+        history.append({
+            "role": role,
+            "content": content[:500],
+            "timestamp": __import__("datetime").datetime.now().strftime("%Y-%m-%d %H:%M")
+        })
+        if len(history) > MAX_CHAT_HISTORY:
+            history = history[-MAX_CHAT_HISTORY:]
+        CHAT_HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+        CHAT_HISTORY_PATH.write_text(
+            json.dumps(history, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+    except Exception as e:
+        print(f"[ChatHistory] Save error: {e}")
+
+
+def load_chat_summary(max_messages: int = 30) -> str:
+    if not CHAT_HISTORY_PATH.exists():
+        return ""
+    try:
+        history = json.loads(CHAT_HISTORY_PATH.read_text(encoding="utf-8"))
+        if not history:
+            return ""
+        recent = history[-max_messages:]
+        lines = ["[RECENT CONVERSATION HISTORY — you remember talking to this person]\n"]
+        for msg in recent:
+            role = msg.get("role", "?")
+            content = msg.get("content", "")
+            ts = msg.get("timestamp", "")
+            label = "User" if role == "user" else "NOVA" if role == "assistant" else role
+            lines.append(f"[{ts}] {label}: {content}")
+        return "\n".join(lines) + "\n"
+    except Exception:
+        return ""
+
+
 class NovaLive:
 
     def __init__(self, ui: NovaUI):
@@ -629,11 +730,13 @@ class NovaLive:
         self._is_speaking   = False
         self._speaking_lock = threading.Lock()
         self.ui.on_text_command = self._on_text_command
+        self.ui.on_stop_response = self._on_stop_response
         self._turn_done_event: asyncio.Event | None = None
 
     def _on_text_command(self, text: str):
         if not self._loop or not self.session:
             return
+        save_chat_message("user", text)
         asyncio.run_coroutine_threadsafe(
             self.session.send_client_content(
                 turns={"parts": [{"text": text}]},
@@ -641,6 +744,26 @@ class NovaLive:
             ),
             self._loop
         )
+
+    def _on_stop_response(self):
+        if not self._loop or not self.session:
+            return
+        self._loop.call_soon_threadsafe(self._stop_event.set)
+        while not self.audio_in_queue.empty():
+            try:
+                self.audio_in_queue.get_nowait()
+            except Exception:
+                break
+        try:
+            asyncio.run_coroutine_threadsafe(
+                self.session.send_client_content(
+                    turns={"parts": [{"text": "stop"}]},
+                    turn_complete=True
+                ),
+                self._loop
+            )
+        except Exception:
+            pass
 
     def set_speaking(self, value: bool):
         with self._speaking_lock:
@@ -681,9 +804,13 @@ class NovaLive:
             f"Use this to calculate exact times for reminders.\n\n"
         )
 
+        pid = _load_personality()
+        personality_line = PERSONALITY_PROMPTS.get(pid, PERSONALITY_PROMPTS["nova"])
+
         parts = [time_ctx]
         if mem_str:
             parts.append(mem_str)
+        parts.append(f"[PERSONALITY]\n{personality_line}\n")
         parts.append(sys_prompt)
 
         return types.LiveConnectConfig(
@@ -693,10 +820,16 @@ class NovaLive:
             system_instruction="\n".join(parts),
             tools=[{"function_declarations": TOOL_DECLARATIONS}],
             session_resumption=types.SessionResumptionConfig(),
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            realtime_input_config=types.RealtimeInputConfig(
+                automatic_activity_detection=types.AutomaticActivityDetection(
+                    disabled=True,
+                )
+            ),
             speech_config=types.SpeechConfig(
                 voice_config=types.VoiceConfig(
                     prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                        voice_name="Charon"
+                        voice_name=_load_voice_name()
                     )
                 )
             ),
@@ -706,7 +839,7 @@ class NovaLive:
         name = fc.name
         args = dict(fc.args or {})
 
-        print(f"[JARVIS] 🔧 {name}  {args}")
+        print(f"[NOVA] 🔧 {name}  {args}")
         self.ui.set_state("THINKING")
 
         if name == "save_memory":
@@ -859,40 +992,94 @@ class NovaLive:
         if not self.ui.muted:
             self.ui.set_state("LISTENING")
 
-        print(f"[JARVIS] 📤 {name} → {str(result)[:80]}")
+        print(f"[NOVA] 📤 {name} → {str(result)[:80]}")
         return types.FunctionResponse(
             id=fc.id, name=name,
             response={"result": result}
         )
 
     async def _send_realtime(self):
+        _sent = [0]
+        _dropped = [0]
         while True:
             msg = await self.out_queue.get()
+            if msg.get("type") == "activity_start":
+                await self.session.send_realtime_input(
+                    activity_start=types.ActivityStart()
+                )
+                continue
+            if msg.get("type") == "activity_end":
+                await self.session.send_realtime_input(
+                    activity_end=types.ActivityEnd()
+                )
+                continue
+            _sent[0] += 1
             blob = types.Blob(data=msg["data"], mime_type=msg["mime_type"])
-            await self.session.send_realtime_input(media=blob)
+            try:
+                await asyncio.wait_for(
+                    self.session.send_realtime_input(media=blob),
+                    timeout=5.0
+                )
+            except (asyncio.TimeoutError, Exception) as e:
+                _dropped[0] += 1
+                if _dropped[0] <= 3:
+                    print(f"[NOVA] ⚠️ Audio chunk dropped: {e}")
+                elif _dropped[0] % 50 == 0:
+                    print(f"[NOVA] ⚠️ {_dropped[0]} total chunks dropped")
 
     async def _listen_audio(self):
-        print("[NOVA] 🎤 Mic started")
+        """Windows-compatible mic capture using sounddevice InputStream."""
+        print("[NOVA] 🎤 Mic started (sounddevice)")
         loop = asyncio.get_event_loop()
-        _dbg_cnt = [0]
+        TARGET_RATE = SEND_SAMPLE_RATE
+        MIC_GAIN = 1.0
 
-        def callback(indata, frames, time_info, status):
-            import numpy as np
+        _speaking = [False]
+        _silence_chunks = [0]
+        SPEECH_THRESHOLD = 800
+        SILENCE_CHUNKS = 25
+
+        _dbg_cnt = [0]
+        _hp_x = 0.0
+        _hp_y = 0.0
+        _hp_alpha = 0.9986
+
+        def _send_activity_start():
+            try:
+                print("[NOVA] 🎤 >>> activity_start (speech detected)")
+                loop.call_soon_threadsafe(
+                    self.out_queue.put_nowait,
+                    {"type": "activity_start"}
+                )
+            except Exception as e:
+                print(f"[NOVA] ❌ activity_start failed: {e}")
+
+        def _send_activity_end():
+            try:
+                print("[NOVA] 🎤 >>> activity_end (silence detected)")
+                loop.call_soon_threadsafe(
+                    self.out_queue.put_nowait,
+                    {"type": "activity_end"}
+                )
+            except Exception as e:
+                print(f"[NOVA] ❌ activity_end failed: {e}")
+
+        def audio_callback(indata, frames, time_info, status):
+            nonlocal _dbg_cnt, _hp_x, _hp_y
             _dbg_cnt[0] += 1
 
-            # Skip first 100 chunks for device warmup
             if _dbg_cnt[0] <= 100:
                 if _dbg_cnt[0] == 100:
-                    print("[NOVA] 🎤 Mic warmup done")
+                    print("[NOVA] 🎤 Warmup done, processing audio")
                 return
 
             with self._speaking_lock:
                 nova_speaking = self._is_speaking
 
             # Always feed audio level to HUD
-            audio = indata[:, 0].astype(np.float32) if indata.ndim > 1 else indata.astype(np.float32)
-            rms = np.sqrt(np.mean(audio ** 2))
-            level = min(1.0, rms / 0.3)
+            audio_raw = indata[:, 0].copy() if indata.ndim > 1 else indata.copy()
+            rms_check = np.sqrt(np.mean(audio_raw ** 2))
+            level = min(1.0, rms_check / 0.3)
             try:
                 self.ui.hud.set_audio_level(level)
             except Exception:
@@ -901,58 +1088,122 @@ class NovaLive:
             if nova_speaking or self.ui.muted:
                 return
 
-            # Convert to int16 PCM for Gemini
-            pcm_data = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16).tobytes()
+            # High-pass filter via numpy (fast)
+            # Simple DC removal: subtract running average
+            audio_float = audio_raw - np.mean(audio_raw)
 
-            loop.call_soon_threadsafe(
-                self.out_queue.put_nowait,
-                {"data": pcm_data, "mime_type": "audio/pcm;rate=16000"}
-            )
+            amplified = np.clip(audio_float * MIC_GAIN, -1.0, 1.0)
+            int16_data = (amplified * 32767).astype(np.int16)
+            data = int16_data.tobytes()
+
+            rms = np.sqrt(np.mean(int16_data.astype(float)**2))
+            if rms > SPEECH_THRESHOLD:
+                if not _speaking[0]:
+                    _speaking[0] = True
+                    _silence_chunks[0] = 0
+                    _send_activity_start()
+                _silence_chunks[0] = 0
+            else:
+                if _speaking[0]:
+                    _silence_chunks[0] += 1
+                    if _silence_chunks[0] >= SILENCE_CHUNKS:
+                        _speaking[0] = False
+                        _send_activity_end()
+
+            if _dbg_cnt[0] % 50 == 0:
+                peak = np.max(np.abs(int16_data))
+                print(f"[NOVA] 🎤 rms={rms:.0f} peak={peak} speaking={_speaking[0]}")
+
+            try:
+                loop.call_soon_threadsafe(
+                    self.out_queue.put_nowait,
+                    {"data": data, "mime_type": "audio/pcm;rate=16000"}
+                )
+            except Exception:
+                pass
 
         try:
-            # Try default device first, fall back to any available
             try:
                 stream = sd.InputStream(
-                    samplerate=SEND_SAMPLE_RATE,
+                    samplerate=TARGET_RATE,
                     channels=1,
                     dtype="float32",
-                    blocksize=CHUNK_SIZE,
-                    callback=callback,
+                    blocksize=1024,
+                    callback=audio_callback,
                 )
             except Exception:
                 print("[NOVA] ⚠️ Default mic failed, trying system default...")
-                devices = sd.query_devices()
                 default_in = sd.query_devices(kind="input")
                 print(f"[NOVA] 🎤 Using device: {default_in['name']}")
                 stream = sd.InputStream(
-                    samplerate=SEND_SAMPLE_RATE,
+                    samplerate=TARGET_RATE,
                     channels=1,
                     dtype="float32",
-                    blocksize=CHUNK_SIZE,
-                    callback=callback,
+                    blocksize=1024,
+                    callback=audio_callback,
                     device=default_in["name"],
                 )
-
             stream.start()
-            print("[NOVA] 🎤 Mic stream open")
+            print(f"[NOVA] 🎤 sounddevice InputStream started (rate={TARGET_RATE}Hz)")
+
+        try:
             while True:
-                await asyncio.sleep(0.1)
-        except Exception as e:
-            print(f"[NOVA] ❌ Mic: {e}")
-            raise
+                await asyncio.sleep(0.5)
+        except asyncio.CancelledError:
+            pass
+        finally:
+            stream.stop()
+            stream.close()
 
     async def _receive_audio(self):
-        print("[JARVIS] 👂 Recv started")
+        print("[NOVA] 👂 Recv started")
         out_buf, in_buf = [], []
+        _recv_cnt = [0]
+        _flush_task = None
+
+        async def _flush_out():
+            await asyncio.sleep(0.4)
+            full = " ".join(out_buf).strip()
+            if full:
+                self.ui.write_log(f"NOVA: {full}")
+                save_chat_message("assistant", full)
+                out_buf.clear()
+
+        async def _flush_in():
+            await asyncio.sleep(0.4)
+            full = " ".join(in_buf).strip()
+            if full:
+                self.ui.write_log(f"You: {full}")
+                save_chat_message("user", full)
+                in_buf.clear()
 
         try:
             while True:
                 async for response in self.session.receive():
+                    _recv_cnt[0] += 1
+
+                    if response.go_away:
+                        print("[NOVA] 🔚 go_away — session closed")
+                        return
+
+                    err = getattr(response, "error", None)
+                    if err:
+                        print(f"[NOVA] ⚠️ response error: {err}")
+
+                    if _recv_cnt[0] <= 3:
+                        has_data = bool(response.data)
+                        has_sc = bool(response.server_content)
+                        print(f"[NOVA] 🔍 Response #{_recv_cnt[0]}: data={has_data} server_content={has_sc}")
 
                     if response.data:
                         if self._turn_done_event and self._turn_done_event.is_set():
                             self._turn_done_event.clear()
-                        self.audio_in_queue.put_nowait(response.data)
+                        try:
+                            self.audio_in_queue.put_nowait(response.data)
+                            if _recv_cnt[0] % 20 == 0:
+                                print(f"[NOVA] 🔊 Recv audio chunk #{_recv_cnt[0]} ({len(response.data)} bytes)")
+                        except asyncio.QueueFull:
+                            print("[NOVA] ⚠️ audio_in_queue full — dropping chunk")
 
                     if response.server_content:
                         sc = response.server_content
@@ -961,42 +1212,53 @@ class NovaLive:
                             txt = _clean_transcript(sc.output_transcription.text)
                             if txt:
                                 out_buf.append(txt)
+                                print(f"[NOVA] 💬 Nova says: {txt}")
+                                if _flush_task and not _flush_task.done():
+                                    _flush_task.cancel()
+                                _flush_task = asyncio.create_task(_flush_out())
 
                         if sc.input_transcription and sc.input_transcription.text:
                             txt = _clean_transcript(sc.input_transcription.text)
                             if txt:
                                 in_buf.append(txt)
+                                if _flush_task and not _flush_task.done():
+                                    _flush_task.cancel()
+                                _flush_task = asyncio.create_task(_flush_in())
 
-                        if sc.turn_complete:
+                        tc = getattr(sc, "turn_complete", None)
+                        if tc:
+                            print("[NOVA] ✅ turn_complete received")
                             if self._turn_done_event:
                                 self._turn_done_event.set()
-
+                            if _flush_task and not _flush_task.done():
+                                _flush_task.cancel()
                             full_in = " ".join(in_buf).strip()
                             if full_in:
                                 self.ui.write_log(f"You: {full_in}")
-                            in_buf = []
-
+                                save_chat_message("user", full_in)
+                            in_buf.clear()
                             full_out = " ".join(out_buf).strip()
                             if full_out:
-                                self.ui.write_log(f"Nova: {full_out}")
-                            out_buf = []
+                                self.ui.write_log(f"NOVA: {full_out}")
+                                save_chat_message("assistant", full_out)
+                            out_buf.clear()
 
                     if response.tool_call:
                         fn_responses = []
                         for fc in response.tool_call.function_calls:
-                            print(f"[JARVIS] 📞 {fc.name}")
+                            print(f"[NOVA] 📞 {fc.name}")
                             fr = await self._execute_tool(fc)
                             fn_responses.append(fr)
                         await self.session.send_tool_response(
                             function_responses=fn_responses
                         )
         except Exception as e:
-            print(f"[JARVIS] ❌ Recv: {e}")
+            print(f"[NOVA] ❌ Recv: {e}")
             traceback.print_exc()
             raise
 
     async def _play_audio(self):
-        print("[JARVIS] 🔊 Play started")
+        print("[NOVA] 🔊 Play started")
 
         stream = sd.RawOutputStream(
             samplerate=RECEIVE_SAMPLE_RATE,
@@ -1023,9 +1285,28 @@ class NovaLive:
                         self._turn_done_event.clear()
                     continue
                 self.set_speaking(True)
-                await asyncio.to_thread(stream.write, chunk)
+                try:
+                    await asyncio.wait_for(
+                        asyncio.to_thread(stream.write, chunk),
+                        timeout=2.0
+                    )
+                except (asyncio.TimeoutError, Exception) as e:
+                    print(f"[NOVA] ⚠️ Play write error: {e}")
+                    try:
+                        stream.stop()
+                        stream.close()
+                    except Exception:
+                        pass
+                    await asyncio.sleep(0.1)
+                    stream = sd.RawOutputStream(
+                        samplerate=RECEIVE_SAMPLE_RATE,
+                        channels=CHANNELS,
+                        dtype="int16",
+                        blocksize=CHUNK_SIZE,
+                    )
+                    stream.start()
         except Exception as e:
-            print(f"[JARVIS] ❌ Play: {e}")
+            print(f"[NOVA] ❌ Play: {e}")
             raise
         finally:
             self.set_speaking(False)
@@ -1040,7 +1321,7 @@ class NovaLive:
 
         while True:
             try:
-                print("[JARVIS] 🔌 Connecting...")
+                print("[NOVA] 🔌 Connecting...")
                 self.ui.set_state("THINKING")
                 config = self._build_config()
 
@@ -1050,13 +1331,19 @@ class NovaLive:
                 ):
                     self.session        = session
                     self._loop          = asyncio.get_event_loop()
-                    self.audio_in_queue = asyncio.Queue()
-                    self.out_queue      = asyncio.Queue(maxsize=10)
+                    self.audio_in_queue = asyncio.Queue(maxsize=200)
+                    self.out_queue      = asyncio.Queue(maxsize=200)
                     self._turn_done_event = asyncio.Event()
+                    self._stop_event = asyncio.Event()
 
-                    print("[JARVIS] ✅ Connected.")
+                    print("[NOVA] ✅ Connected.")
                     self.ui.set_state("LISTENING")
-                    self.ui.write_log("SYS: JARVIS online.")
+                    self.ui.write_log("SYS: NOVA online.")
+
+                    await session.send_realtime_input(
+                        text="Hello, I'm ready to talk. Please acknowledge."
+                    )
+                    print("[NOVA] 📝 Initial prompt sent")
 
                     tg.create_task(self._send_realtime())
                     tg.create_task(self._listen_audio())
@@ -1064,12 +1351,13 @@ class NovaLive:
                     tg.create_task(self._play_audio())
 
             except Exception as e:
-                print(f"[JARVIS] ⚠️ {e}")
+                print(f"[NOVA] ⚠️ {e}")
                 traceback.print_exc()
             self.set_speaking(False)
             self.ui.set_state("THINKING")
-            print("[JARVIS] 🔄 Reconnecting in 3s...")
+            print("[NOVA] 🔄 Reconnecting in 3s...")
             await asyncio.sleep(3)
+
 
 def main():
     ui = NovaUI("face.png")

@@ -1,0 +1,45 @@
+{
+  "voices": [
+    {
+      "id": "charon",
+      "name": "Charon",
+      "desc": "Deep, authoritative"
+    },
+    {
+      "id": "puck",
+      "name": "Puck",
+      "desc": "Playful, energetic"
+    },
+    {
+      "id": "kore",
+      "name": "Kore",
+      "desc": "Warm, friendly"
+    },
+    {
+      "id": "leda",
+      "name": "Leda",
+      "desc": "Calm, soothing"
+    },
+    {
+      "id": "orus",
+      "name": "Orus",
+      "desc": "Bold, confident"
+    },
+    {
+      "id": "fenrir",
+      "name": "Fenrir",
+      "desc": "Rough, intense"
+    },
+    {
+      "id": "aoede",
+      "name": "Aoede",
+      "desc": "Melodic, expressive"
+    },
+    {
+      "id": "xenon",
+      "name": "Xenon",
+      "desc": "Crisp, modern"
+    }
+  ],
+  "current": "charon"
+}
